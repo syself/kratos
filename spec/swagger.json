@@ -1319,9 +1319,9 @@
         ],
         "responses": {
           "200": {
-            "description": "successfulSelfServiceSettingsWithoutBrowser",
+            "description": "selfServiceSettingsFlow",
             "schema": {
-              "$ref": "#/definitions/successfulSelfServiceSettingsWithoutBrowser"
+              "$ref": "#/definitions/selfServiceSettingsFlow"
             }
           },
           "302": {
@@ -3725,8 +3725,7 @@
       "description": "The Response for Settings Flows via API",
       "type": "object",
       "required": [
-        "flow",
-        "identity"
+        "flow"
       ],
       "properties": {
         "flow": {
@@ -3828,6 +3827,11 @@
         "id"
       ],
       "properties": {
+        "height": {
+          "description": "Height of the image",
+          "type": "integer",
+          "format": "int64"
+        },
         "id": {
           "description": "A unique identifier",
           "type": "string"
@@ -3837,7 +3841,7 @@
           "type": "string"
         },
         "width": {
-          "description": "Height of the image",
+          "description": "Width of the image",
           "type": "integer",
           "format": "int64"
         }
