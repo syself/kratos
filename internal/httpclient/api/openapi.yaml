@@ -483,6 +483,14 @@ paths:
         schema:
           type: string
         style: form
+      - description: The Session Token of the Identity performing the settings flow.
+        explode: false
+        in: header
+        name: X-Session-Token
+        required: false
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -563,6 +571,14 @@ paths:
         schema:
           type: string
         style: form
+      - description: The Session Token of the Identity performing the settings flow.
+        explode: false
+        in: header
+        name: X-Session-Token
+        required: false
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -630,6 +646,14 @@ paths:
         schema:
           type: string
         style: form
+      - description: The Session Token of the Identity performing the settings flow.
+        explode: false
+        in: header
+        name: X-Session-Token
+        required: false
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -4358,16 +4382,6 @@ components:
           type: string
       required:
       - identity
-      type: object
-    successfulSelfServiceSettingsWithoutBrowser:
-      description: The Response for Settings Flows via API
-      properties:
-        flow:
-          $ref: '#/components/schemas/selfServiceSettingsFlow'
-        identity:
-          $ref: '#/components/schemas/identity'
-      required:
-      - flow
       type: object
     uiContainer:
       description: Container represents a HTML Form. The container can work with both
