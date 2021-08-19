@@ -1122,7 +1122,6 @@
                   "additionalProperties": false
                 }
               },
-
               "if": {
                 "properties": {
                   "enabled": {
