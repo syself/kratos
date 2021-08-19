@@ -95,7 +95,7 @@ func TestAdminStrategy(t *testing.T) {
 	})
 
 	t.Run("description=should not be able to recover an account that does not exist", func(t *testing.T) {
-		_, _, err := adminSDK.V0alpha1Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
+		_, _, err := adminSDK.V0alpha2Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
 			IdentityId: x.NewUUID().String(),
 		}).Execute()
 		require.IsType(t, err, new(kratos.GenericOpenAPIError), "%T", err)
@@ -107,7 +107,7 @@ func TestAdminStrategy(t *testing.T) {
 		require.NoError(t, reg.IdentityManager().Create(context.Background(),
 			&id, identity.ManagerAllowWriteProtectedTraits))
 
-		_, _, err := adminSDK.V0alpha1Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
+		_, _, err := adminSDK.V0alpha2Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
 			IdentityId: id.ID.String(),
 		}).Execute()
 		require.IsType(t, err, new(kratos.GenericOpenAPIError), "%T", err)
@@ -120,7 +120,7 @@ func TestAdminStrategy(t *testing.T) {
 		require.NoError(t, reg.IdentityManager().Create(context.Background(),
 			&id, identity.ManagerAllowWriteProtectedTraits))
 
-		rl, _, err := adminSDK.V0alpha1Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
+		rl, _, err := adminSDK.V0alpha2Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
 			IdentityId: id.ID.String(),
 			ExpiresIn:  pointerx.String("100ms"),
 		}).Execute()
@@ -143,7 +143,7 @@ func TestAdminStrategy(t *testing.T) {
 		require.NoError(t, reg.IdentityManager().Create(context.Background(),
 			&id, identity.ManagerAllowWriteProtectedTraits))
 
-		rl, _, err := adminSDK.V0alpha1Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
+		rl, _, err := adminSDK.V0alpha2Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
 			IdentityId: id.ID.String(),
 		}).Execute()
 		require.NoError(t, err)
@@ -398,7 +398,7 @@ func TestRecovery(t *testing.T) {
 		assert.Equal(t, http.StatusOK, res.StatusCode)
 		assert.Contains(t, res.Request.URL.String(), conf.SelfServiceFlowRecoveryUI().String()+"?flow=")
 
-		rs, _, err := testhelpers.NewSDKCustomClient(public, c).V0alpha1Api.GetSelfServiceRecoveryFlow(context.Background()).Id(res.Request.URL.Query().Get("flow")).Execute()
+		rs, _, err := testhelpers.NewSDKCustomClient(public, c).V0alpha2Api.GetSelfServiceRecoveryFlow(context.Background()).Id(res.Request.URL.Query().Get("flow")).Execute()
 		require.NoError(t, err)
 
 		require.Len(t, rs.Ui.Messages, 1)
@@ -448,7 +448,7 @@ func TestRecovery(t *testing.T) {
 		assert.Contains(t, res.Request.URL.String(), conf.SelfServiceFlowRecoveryUI().String())
 		assert.NotContains(t, res.Request.URL.String(), gjson.Get(body, "id").String())
 
-		rs, _, err := testhelpers.NewSDKCustomClient(public, c).V0alpha1Api.GetSelfServiceRecoveryFlow(context.Background()).Id(res.Request.URL.Query().Get("flow")).Execute()
+		rs, _, err := testhelpers.NewSDKCustomClient(public, c).V0alpha2Api.GetSelfServiceRecoveryFlow(context.Background()).Id(res.Request.URL.Query().Get("flow")).Execute()
 		require.NoError(t, err)
 
 		require.Len(t, rs.Ui.Messages, 1)
@@ -472,7 +472,7 @@ func TestDisabledEndpoint(t *testing.T) {
 			require.NoError(t, reg.IdentityManager().Create(context.Background(),
 				&id, identity.ManagerAllowWriteProtectedTraits))
 
-			rl, _, err := adminSDK.V0alpha1Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
+			rl, _, err := adminSDK.V0alpha2Api.AdminCreateSelfServiceRecoveryLink(context.Background()).AdminCreateSelfServiceRecoveryLinkBody(kratos.AdminCreateSelfServiceRecoveryLinkBody{
 				IdentityId: id.ID.String(),
 			}).Execute()
 			assert.Nil(t, rl)
