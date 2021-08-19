@@ -81,6 +81,7 @@ const (
 	ViperKeySessionName                                             = "session.cookie.name"
 	ViperKeySessionPath                                             = "session.cookie.path"
 	ViperKeySessionPersistentCookie                                 = "session.cookie.persistent"
+	ViperKeySessionWhoAmIAAL                                        = "session.whoami.required_aal"
 	ViperKeyCookieSameSite                                          = "cookies.same_site"
 	ViperKeyCookieDomain                                            = "cookies.domain"
 	ViperKeyCookiePath                                              = "cookies.path"
@@ -101,6 +102,7 @@ const (
 	ViperKeySelfServiceSettingsAfter                                = "selfservice.flows.settings.after"
 	ViperKeySelfServiceSettingsRequestLifespan                      = "selfservice.flows.settings.lifespan"
 	ViperKeySelfServiceSettingsPrivilegedAuthenticationAfter        = "selfservice.flows.settings.privileged_session_max_age"
+	ViperKeySelfServiceSettingsRequiredAAL                          = "selfservice.flows.settings.required_aal"
 	ViperKeySelfServiceRecoveryAfter                                = "selfservice.flows.recovery.after"
 	ViperKeySelfServiceRecoveryEnabled                              = "selfservice.flows.recovery.enabled"
 	ViperKeySelfServiceRecoveryUI                                   = "selfservice.flows.recovery.ui_url"
@@ -834,6 +836,14 @@ func (p *Config) SessionDomain() string {
 
 func (p *Config) CookieDomain() string {
 	return p.p.String(ViperKeyCookieDomain)
+}
+
+func (p *Config) SessionWhoAmIAAL() string {
+	return p.p.String(ViperKeySessionWhoAmIAAL)
+}
+
+func (p *Config) SelfServiceSettingsRequiredAAL() string {
+	return p.p.String(ViperKeySelfServiceSettingsRequiredAAL)
 }
 
 func (p *Config) CookieSameSiteMode() http.SameSite {
