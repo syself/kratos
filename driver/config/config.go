@@ -6,7 +6,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/duo-labs/webauthn/protocol"
 	"net"
 	"net/http"
 	"net/url"
@@ -15,6 +14,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/duo-labs/webauthn/protocol"
 
 	"github.com/duo-labs/webauthn/webauthn"
 
@@ -904,7 +905,7 @@ func (p *Config) WebAuthnConfig() *webauthn.Config {
 		RPOrigin:      p.p.String(ViperKeyWebAuthnRPOrigin),
 		RPIcon:        p.p.String(ViperKeyWebAuthnRPIcon),
 		AuthenticatorSelection: protocol.AuthenticatorSelection{
-			UserVerification:        protocol.VerificationDiscouraged,
+			UserVerification: protocol.VerificationDiscouraged,
 		},
 	}
 }

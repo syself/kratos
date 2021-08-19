@@ -19,6 +19,15 @@
                       "type": "boolean"
                     }
                   }
+                },
+                "totp": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "account_name": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               }
             },
