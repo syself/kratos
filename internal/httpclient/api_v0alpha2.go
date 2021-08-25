@@ -285,6 +285,11 @@ type V0alpha2Api interface {
 		or the Ory Kratos Session Token are set. The public endpoint does not return 404 status codes
 		but instead 403 or 500 to improve data privacy.
 
+		Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+		Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+		credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+		to sign in with the second factor or change the configuration.
+
 		You can access this endpoint without credentials when using Ory Kratos' Admin API.
 
 		More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
@@ -503,6 +508,11 @@ type V0alpha2Api interface {
 		If this endpoint is called via an AJAX request, the response contains the settings flow without any redirects
 		or a 403 forbidden error if no valid session was set.
 
+		Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+		Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+		credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+		to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.
+
 		This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.
 
 		More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
@@ -527,6 +537,11 @@ type V0alpha2Api interface {
 		You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server
 		Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make
 		you vulnerable to a variety of CSRF attacks.
+
+		Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+		Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+		credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+		to sign in with the second factor or change the configuration.
 
 		This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).
 
@@ -740,19 +755,24 @@ type V0alpha2Api interface {
 		HTTP 302 redirect to a fresh settings flow if the original flow expired with the appropriate error messages set;
 		HTTP 400 on form validation errors.
 		HTTP 401 when the endpoint is called without a valid session token.
-		HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached.
+		HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low.
 		Implies that the user needs to re-authenticate.
 
 		Browser flows without HTTP Header `Accept` or with `Accept: text/*` respond with
 		a HTTP 302 redirect to the post/after settings URL or the `return_to` value if it was set and if the flow succeeded;
 		a HTTP 302 redirect to the Settings UI URL with the flow ID containing the validation errors otherwise.
-		a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached.
+		a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low.
 
 		Browser flows with HTTP Header `Accept: application/json` respond with
 		HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success;
 		HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set;
-		HTTP 403 when the page is accessed without a session cookie.
+		HTTP 403 when the page is accessed without a session cookie or the session's AAL is too low.
 		HTTP 400 on form validation errors.
+
+		Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+		Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+		credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+		to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.
 
 		More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
 			 * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -821,6 +841,11 @@ type V0alpha2Api interface {
 
 		console.log(session)
 		```
+
+		Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+		Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+		credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+		to sign in with the second factor or change the configuration.
 
 		This endpoint is useful for:
 
@@ -2681,6 +2706,11 @@ func (r V0alpha2ApiApiGetSelfServiceSettingsFlowRequest) Execute() (*SelfService
 or the Ory Kratos Session Token are set. The public endpoint does not return 404 status codes
 but instead 403 or 500 to improve data privacy.
 
+Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+to sign in with the second factor or change the configuration.
+
 You can access this endpoint without credentials when using Ory Kratos' Admin API.
 
 More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
@@ -3841,6 +3871,11 @@ was set, the browser will be redirected to the login endpoint.
 If this endpoint is called via an AJAX request, the response contains the settings flow without any redirects
 or a 403 forbidden error if no valid session was set.
 
+Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.
+
 This endpoint is NOT INTENDED for clients that do not have a browser (Chrome, Firefox, ...) as cookies are needed.
 
 More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
@@ -3980,6 +4015,11 @@ To fetch an existing settings flow call `/self-service/settings/flows?flow=<flow
 You MUST NOT use this endpoint in client-side (Single Page Apps, ReactJS, AngularJS) nor server-side (Java Server
 Pages, NodeJS, PHP, Golang, ...) browser applications. Using this endpoint in these applications will make
 you vulnerable to a variety of CSRF attacks.
+
+Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+to sign in with the second factor or change the configuration.
 
 This endpoint MUST ONLY be used in scenarios such as native mobile apps (React Native, Objective C, Swift, Java, ...).
 
@@ -5107,19 +5147,24 @@ HTTP 200 and an application/json body with the session token on success;
 HTTP 302 redirect to a fresh settings flow if the original flow expired with the appropriate error messages set;
 HTTP 400 on form validation errors.
 HTTP 401 when the endpoint is called without a valid session token.
-HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached.
+HTTP 403 when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low.
 Implies that the user needs to re-authenticate.
 
 Browser flows without HTTP Header `Accept` or with `Accept: text/*` respond with
 a HTTP 302 redirect to the post/after settings URL or the `return_to` value if it was set and if the flow succeeded;
 a HTTP 302 redirect to the Settings UI URL with the flow ID containing the validation errors otherwise.
-a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached.
+a HTTP 302 redirect to the login endpoint when `selfservice.flows.settings.privileged_session_max_age` was reached or the session's AAL is too low.
 
 Browser flows with HTTP Header `Accept: application/json` respond with
 HTTP 200 and a application/json body with the signed in identity and a `Set-Cookie` header on success;
 HTTP 302 redirect to a fresh login flow if the original flow expired with the appropriate error messages set;
-HTTP 403 when the page is accessed without a session cookie.
+HTTP 403 when the page is accessed without a session cookie or the session's AAL is too low.
 HTTP 400 on form validation errors.
+
+Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+to sign in with the second factor (happens automatically for server-side browser flows) or change the configuration.
 
 More information can be found at [Ory Kratos User Settings & Profile Management Documentation](../self-service/flows/user-settings).
  * @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -5466,6 +5511,11 @@ const session = await client.toSession("the-session-token")
 console.log(session)
 ```
 
+Depending on your configuration this endpoint might return a 403 error if the session has a lower Authenticator
+Assurance Level (AAL) than is possible for the identity. This can happen if the identity has password + webauthn
+credentials (which would result in AAL2) but the session has only AAL1. If this error occurs, ask the user
+to sign in with the second factor or change the configuration.
+
 This endpoint is useful for:
 
 AJAX calls. Remember to send credentials and set up CORS correctly!
@@ -5560,6 +5610,16 @@ func (a *V0alpha2ApiService) ToSessionExecute(r V0alpha2ApiApiToSessionRequest) 
 			error: localVarHTTPResponse.Status,
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
+			var v JsonError
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
 			var v JsonError
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
