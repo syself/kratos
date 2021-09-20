@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/cenkalti/backoff"
@@ -183,7 +184,38 @@ func (m *Courier) DispatchMessage(ctx context.Context, msg Message) error {
 			}
 		}
 
-		if err := m.Dialer.DialAndSend(ctx, gm); err != nil {
+		err = m.Dialer.DialAndSend(ctx, gm)
+		switch {
+		case err == nil:
+			// Successfully sent
+			m.d.Logger().
+				WithField("message_id", msg.ID).
+				WithField("message_type", msg.Type).
+				WithField("message_template_type", msg.TemplateType).
+				WithField("message_subject", msg.Subject).
+				Debug("Courier sent out message.")
+
+		case is5xxError(err):
+			// Do not retry sending it, since 5xx errors show that this is impossible
+			m.d.Logger().
+				WithError(err).
+				WithField("smtp_server", fmt.Sprintf("%s:%d", m.Dialer.Host, m.Dialer.Port)).
+				WithField("smtp_ssl_enabled", m.Dialer.SSL).
+				// WithField("email_to", msg.Recipient).
+				WithField("message_from", from).
+				Error("Unable to send email using SMTP connection. No retries due to 5xx error code.")
+
+			// Set status to sent anyway, so that message does not get requeued
+			if err := m.d.CourierPersister().SetMessageStatus(ctx, msg.ID, MessageStatusSent); err != nil {
+				m.d.Logger().
+					WithError(err).
+					WithField("message_id", msg.ID).
+					Error(`Unable to set the message status to "sent".`)
+				return err
+			}
+
+		default:
+			// Other error type - resend message
 			m.d.Logger().
 				WithError(err).
 				WithField("smtp_server", fmt.Sprintf("%s:%d", m.Dialer.Host, m.Dialer.Port)).
@@ -194,20 +226,6 @@ func (m *Courier) DispatchMessage(ctx context.Context, msg Message) error {
 			return errors.WithStack(err)
 		}
 
-		if err := m.d.CourierPersister().SetMessageStatus(ctx, msg.ID, MessageStatusSent); err != nil {
-			m.d.Logger().
-				WithError(err).
-				WithField("message_id", msg.ID).
-				Error(`Unable to set the message status to "sent".`)
-			return err
-		}
-
-		m.d.Logger().
-			WithField("message_id", msg.ID).
-			WithField("message_type", msg.Type).
-			WithField("message_template_type", msg.TemplateType).
-			WithField("message_subject", msg.Subject).
-			Debug("Courier sent out message.")
 		return nil
 	}
 	return errors.Errorf("received unexpected message type: %d", msg.Type)
@@ -243,4 +261,9 @@ func (m *Courier) DispatchQueue(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func is5xxError(err error) bool {
+	errCode := strings.Split(err.Error(), ":")[2]
+	return strings.HasPrefix(errCode, " 5")
 }
