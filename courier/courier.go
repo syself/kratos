@@ -264,6 +264,9 @@ func (m *Courier) DispatchQueue(ctx context.Context) error {
 }
 
 func is5xxError(err error) bool {
-	errCode := strings.Split(err.Error(), ":")[2]
-	return strings.HasPrefix(errCode, " 5")
+	errCode := strings.Split(err.Error(), ":")
+	if len(errCode) < 3 {
+		return false
+	}
+	return strings.HasPrefix(errCode[2], " 5")
 }
